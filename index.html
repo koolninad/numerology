@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerology Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #e94560, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #8b8b8b;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h2 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #e94560;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #e94560, #f39c12);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .result-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .result-section h3 {
+            color: #f39c12;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .calculation-breakdown {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .letter-values {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .letter-value {
+            background: rgba(233, 69, 96, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .letter-value span {
+            color: #e94560;
+            font-weight: bold;
+        }
+
+        .sum-line {
+            color: #8b8b8b;
+            margin: 10px 0;
+            padding: 10px 0;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .reduction-steps {
+            color: #aaa;
+            margin-top: 10px;
+        }
+
+        .final-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #e94560, #f39c12);
+            border-radius: 50%;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .number-meaning {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(243, 156, 18, 0.1);
+            border-radius: 10px;
+            border-left: 3px solid #f39c12;
+        }
+
+        .number-meaning h4 {
+            color: #f39c12;
+            margin-bottom: 8px;
+        }
+
+        .number-meaning p {
+            color: #ccc;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .letter-chart {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .chart-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .chart-item .letter {
+            color: #e94560;
+            font-weight: bold;
+        }
+
+        .chart-item .value {
+            color: #888;
+        }
+
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Numerology Calculator</h1>
+        <p class="subtitle">Discover the hidden numbers in your name and birthdate</p>
+
+        <div class="card">
+            <h2>Enter Your Details</h2>
+            <div class="input-group">
+                <label for="name">Your Name (First name or Full name)</label>
+                <input type="text" id="name" placeholder="Enter your name">
+            </div>
+            <div class="input-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob">
+            </div>
+            <button onclick="calculate()">Calculate My Numbers</button>
+        </div>
+
+        <div class="results" id="results">
+            <div class="card result-section" id="nameResult">
+                <h3>Name Number</h3>
+                <div id="nameCalculation"></div>
+            </div>
+
+            <div class="card result-section" id="dayResult">
+                <h3>Day Number (Birth Day)</h3>
+                <div id="dayCalculation"></div>
+            </div>
+
+            <div class="card result-section" id="lifePathResult">
+                <h3>Life Path Number (Full Birthdate)</h3>
+                <div id="lifePathCalculation"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Letter Values Chart</h2>
+            <div class="letter-chart" id="letterChart"></div>
+        </div>
+    </div>
+
+    <script>
+        // Letter to number mapping as per user's specification
+        const letterValues = {
+            'A': 1, 'B': 2, 'C': 2, 'D': 4, 'E': 5, 'F': 8, 'G': 3,
+            'H': 8, 'I': 1, 'J': 1, 'K': 2, 'L': 3, 'M': 4, 'N': 5,
+            'O': 7, 'P': 8, 'Q': 1, 'R': 2, 'S': 3, 'T': 4, 'U': 6,
+            'V': 6, 'W': 6, 'X': 6, 'Y': 1, 'Z': 7
+        };
+
+        // Number meanings
+        const numberMeanings = {
+            1: "Leadership, independence, and new beginnings. You are a natural leader with strong willpower.",
+            2: "Partnership, balance, and diplomacy. You are cooperative and sensitive to others' needs.",
+            3: "Creativity, expression, and joy. You are artistic and have excellent communication skills.",
+            4: "Stability, hard work, and practicality. You are reliable and build strong foundations.",
+            5: "Freedom, adventure, and change. You are versatile and embrace new experiences.",
+            6: "Responsibility, love, and nurturing. You are caring and focused on family and community.",
+            7: "Spirituality, wisdom, and introspection. You seek deeper truths and knowledge.",
+            8: "Abundance, power, and success. You have strong business acumen and material goals.",
+            9: "Humanitarianism, completion, and wisdom. You are compassionate and serve the greater good."
+        };
+
+        // Generate letter chart on page load
+        function generateLetterChart() {
+            const chart = document.getElementById('letterChart');
+            let html = '';
+            for (const [letter, value] of Object.entries(letterValues)) {
+                html += `<div class="chart-item"><span class="letter">${letter}</span><br><span class="value">${value}</span></div>`;
+            }
+            chart.innerHTML = html;
+        }
+
+        // Reduce number to single digit
+        function reduceToSingleDigit(num) {
+            const steps = [];
+            while (num > 9) {
+                const digits = num.toString().split('').map(Number);
+                const step = digits.join(' + ') + ' = ' + digits.reduce((a, b) => a + b, 0);
+                steps.push(step);
+                num = digits.reduce((a, b) => a + b, 0);
+            }
+            return { finalNumber: num, steps };
+        }
+
+        // Calculate name number
+        function calculateName(name) {
+            const cleanName = name.toUpperCase().replace(/[^A-Z]/g, '');
+            if (cleanName.length === 0) return null;
+
+            const letterBreakdown = [];
+            let sum = 0;
+
+            for (const letter of cleanName) {
+                const value = letterValues[letter] || 0;
+                letterBreakdown.push({ letter, value });
+                sum += value;
+            }
+
+            const reduction = reduceToSingleDigit(sum);
+
+            return {
+                letterBreakdown,
+                sum,
+                reduction,
+                finalNumber: reduction.finalNumber
+            };
+        }
+
+        // Calculate day number
+        function calculateDay(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate().toString().padStart(2, '0');
+            const digits = day.split('').map(Number);
+            const sum = digits.reduce((a, b) => a + b, 0);
+            const reduction = reduceToSingleDigit(sum);
+
+            return {
+                day,
+                digits,
+                sum,
+                reduction,
+                finalNumber: sum > 9 ? reduction.finalNumber : sum
+            };
+        }
+
+        // Calculate life path number
+        function calculateLifePath(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear().toString();
+
+            const fullDate = day + month + year;
+            const digits = fullDate.split('').map(Number);
+            const sum = digits.reduce((a, b) => a + b, 0);
+            const reduction = reduceToSingleDigit(sum);
+
+            return {
+                formattedDate: `${day}/${month}/${year}`,
+                digits,
+                sum,
+                reduction,
+                finalNumber: sum > 9 ? reduction.finalNumber : sum
+            };
+        }
+
+        // Main calculation function
+        function calculate() {
+            const name = document.getElementById('name').value.trim();
+            const dob = document.getElementById('dob').value;
+
+            if (!name && !dob) {
+                alert('Please enter at least a name or date of birth');
+                return;
+            }
+
+            document.getElementById('results').classList.add('show');
+
+            // Name calculation
+            if (name) {
+                const nameResult = calculateName(name);
+                if (nameResult) {
+                    let html = '<div class="calculation-breakdown">';
+                    html += '<div class="letter-values">';
+                    nameResult.letterBreakdown.forEach(item => {
+                        html += `<div class="letter-value"><span>${item.letter}</span> = ${item.value}</div>`;
+                    });
+                    html += '</div>';
+
+                    html += `<div class="sum-line">${nameResult.letterBreakdown.map(i => i.value).join(' + ')} = <strong>${nameResult.sum}</strong></div>`;
+
+                    if (nameResult.reduction.steps.length > 0) {
+                        html += '<div class="reduction-steps">';
+                        nameResult.reduction.steps.forEach(step => {
+                            html += `<div>${step}</div>`;
+                        });
+                        html += '</div>';
+                    }
+                    html += '</div>';
+
+                    html += `<div class="final-number">${nameResult.finalNumber}</div>`;
+                    html += `<div class="number-meaning"><h4>Number ${nameResult.finalNumber} Meaning</h4><p>${numberMeanings[nameResult.finalNumber]}</p></div>`;
+
+                    document.getElementById('nameCalculation').innerHTML = html;
+                    document.getElementById('nameResult').style.display = 'block';
+                }
+            } else {
+                document.getElementById('nameResult').style.display = 'none';
+            }
+
+            // Date calculations
+            if (dob) {
+                // Day number
+                const dayResult = calculateDay(dob);
+                let dayHtml = '<div class="calculation-breakdown">';
+                dayHtml += `<div class="sum-line">Day: ${dayResult.day} → ${dayResult.digits.join(' + ')} = <strong>${dayResult.sum}</strong></div>`;
+
+                if (dayResult.reduction.steps.length > 0) {
+                    dayHtml += '<div class="reduction-steps">';
+                    dayResult.reduction.steps.forEach(step => {
+                        dayHtml += `<div>${step}</div>`;
+                    });
+                    dayHtml += '</div>';
+                }
+                dayHtml += '</div>';
+
+                dayHtml += `<div class="final-number">${dayResult.finalNumber}</div>`;
+                dayHtml += `<div class="number-meaning"><h4>Number ${dayResult.finalNumber} Meaning</h4><p>${numberMeanings[dayResult.finalNumber]}</p></div>`;
+
+                document.getElementById('dayCalculation').innerHTML = dayHtml;
+                document.getElementById('dayResult').style.display = 'block';
+
+                // Life path number
+                const lifePathResult = calculateLifePath(dob);
+                let lifeHtml = '<div class="calculation-breakdown">';
+                lifeHtml += `<div class="sum-line">Date: ${lifePathResult.formattedDate}</div>`;
+                lifeHtml += `<div class="sum-line">${lifePathResult.digits.join(' + ')} = <strong>${lifePathResult.sum}</strong></div>`;
+
+                if (lifePathResult.reduction.steps.length > 0) {
+                    lifeHtml += '<div class="reduction-steps">';
+                    lifePathResult.reduction.steps.forEach(step => {
+                        lifeHtml += `<div>${step}</div>`;
+                    });
+                    lifeHtml += '</div>';
+                }
+                lifeHtml += '</div>';
+
+                lifeHtml += `<div class="final-number">${lifePathResult.finalNumber}</div>`;
+                lifeHtml += `<div class="number-meaning"><h4>Number ${lifePathResult.finalNumber} Meaning</h4><p>${numberMeanings[lifePathResult.finalNumber]}</p></div>`;
+
+                document.getElementById('lifePathCalculation').innerHTML = lifeHtml;
+                document.getElementById('lifePathResult').style.display = 'block';
+            } else {
+                document.getElementById('dayResult').style.display = 'none';
+                document.getElementById('lifePathResult').style.display = 'none';
+            }
+        }
+
+        // Initialize
+        generateLetterChart();
+    </script>
+</body>
+</html>
